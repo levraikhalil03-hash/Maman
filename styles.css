@@ -1,0 +1,104 @@
+:root {
+  color-scheme: light;
+  font-family: 'Comic Sans MS', 'Trebuchet MS', system-ui, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  background: radial-gradient(circle at top, #fff5fa, #ffd4e8);
+  color: #531235;
+}
+
+.container {
+  text-align: center;
+  padding: 2rem;
+}
+
+.heart {
+  font-size: clamp(7rem, 20vw, 13rem);
+  line-height: 1;
+  margin-bottom: 1rem;
+  animation: pulse 1.3s infinite;
+}
+
+h1 {
+  font-size: clamp(2rem, 5vw, 3rem);
+  margin: 0 0 1.8rem;
+}
+
+.buttons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.btn {
+  border: 0;
+  border-radius: 999px;
+  padding: 1rem 1.5rem;
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+  color: #fff;
+  transition: transform 0.15s ease, filter 0.2s ease;
+}
+
+.btn:hover {
+  transform: translateY(-2px) scale(1.03);
+  filter: brightness(1.08);
+}
+
+.yes {
+  background: #28a745;
+}
+
+.no {
+  background: #db2f58;
+}
+
+.result {
+  text-align: center;
+  animation: fadeIn 0.35s ease;
+}
+
+.result-emoji {
+  font-size: clamp(8rem, 26vw, 16rem);
+  line-height: 1;
+  margin-bottom: 1.5rem;
+}
+
+.result-text {
+  font-size: clamp(1.8rem, 5.8vw, 4rem);
+  font-weight: 900;
+  letter-spacing: 0.05em;
+  margin: 0;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.12);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
