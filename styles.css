@@ -19,6 +19,7 @@ body {
 .container {
   text-align: center;
   padding: 2rem;
+  width: min(96vw, 900px);
 }
 
 .heart {
@@ -67,6 +68,18 @@ h1 {
 .result {
   text-align: center;
   animation: fadeIn 0.35s ease;
+}
+
+.result-top {
+  display: flex;
+  justify-content: flex-start;
+  margin-bottom: 1rem;
+}
+
+.reset {
+  background: #6b4ab3;
+  font-size: 0.95rem;
+  padding: 0.6rem 1rem;
 }
 
 .result-emoji {
