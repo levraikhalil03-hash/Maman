@@ -47,7 +47,7 @@ function showResult(emoji, text) {
   app.innerHTML = `
     <section class="result" aria-live="polite">
       <div class="result-top">
-        <button id="resetBtn" class="btn reset">actuals</button>
+        <button id="resetBtn" class="btn reset">Accueil</button>
       </div>
       <div class="result-emoji">${emoji}</div>
       <p class="result-text">${text}</p>
@@ -61,89 +61,104 @@ function renderMiniGame() {
   stopGameLoop();
 
   app.innerHTML = `
-    <section class="mini-game" aria-label="Mini jeu des blocs qui sautent">
+    <section class="mini-game" aria-label="Mini jeu runner">
       <div class="result-top">
-        <button id="homeBtn" class="btn reset">actuals</button>
+        <button id="homeBtn" class="btn reset">Accueil</button>
       </div>
       <h2 class="game-title">mini-jeu</h2>
-      <div class="game-emoji">😆</div>
-      <p class="game-text">Clique dans la zone: 1 clic = petit saut, plusieurs clics = gros sauts !</p>
-      <div id="gameArea" class="game-area"></div>
+      <div class="game-text">Clique pour faire sauter l'emoji : 1 clic = petit saut, clics rapides = grand saut.</div>
+      <div id="gameArea" class="game-area">
+        <div class="runner" id="runner">😆</div>
+      </div>
     </section>
   `;
 
   document.getElementById('homeBtn').addEventListener('click', renderHome);
 
   const gameArea = document.getElementById('gameArea');
-  const groundY = 200;
-  const gravity = 0.58;
-  const speed = 2.2;
+  const runnerEl = document.getElementById('runner');
 
-  const blocks = [
-    { width: 34, height: 95, x: 0, y: groundY - 95, vy: 0 },
-    { width: 34, height: 62, x: 170, y: groundY - 62, vy: 0 },
-    { width: 34, height: 38, x: 320, y: groundY - 38, vy: 0 },
-    { width: 34, height: 10, x: 470, y: groundY - 10, vy: 0 },
-    { width: 34, height: 76, x: 620, y: groundY - 76, vy: 0 }
-  ];
+  const groundY = 176;
+  const gravity = 0.64;
+  const obstacleSpeed = 4.1;
+  let groundOffset = 0;
 
-  blocks.forEach((block) => {
-    const element = document.createElement('div');
-    element.className = 'jump-block';
-    element.style.width = `${block.width}px`;
-    element.style.height = `${block.height}px`;
-    gameArea.appendChild(element);
-    block.element = element;
-  });
+  const runner = {
+    x: 92,
+    y: groundY,
+    vy: 0
+  };
+
+  const obstacles = [];
+
+  function createObstacle(x) {
+    const heightBlocks = Math.floor(Math.random() * 3) + 1;
+    const obstacle = {
+      x,
+      width: 38,
+      heightBlocks,
+      element: document.createElement('div')
+    };
+    obstacle.element.className = 'obstacle';
+    obstacle.element.style.height = `${heightBlocks * 34}px`;
+    gameArea.appendChild(obstacle.element);
+    obstacles.push(obstacle);
+  }
+
+  const areaWidth = gameArea.clientWidth;
+  createObstacle(areaWidth + 140);
+  createObstacle(areaWidth + 420);
+  createObstacle(areaWidth + 710);
 
   let clickPower = 0;
   let clickDecayTimer = null;
 
-  function boostJumpPower() {
+  function jump() {
     clickPower = Math.min(clickPower + 1, 7);
     if (clickDecayTimer) {
       clearTimeout(clickDecayTimer);
     }
     clickDecayTimer = setTimeout(() => {
       clickPower = 0;
-    }, 420);
+    }, 400);
 
-    const jumpStrength = 4.8 + clickPower * 1.5;
-    blocks.forEach((block) => {
-      if (Math.abs(block.y - (groundY - block.height)) < 1) {
-        block.vy = -jumpStrength;
-      }
-    });
+    if (Math.abs(runner.y - groundY) < 1) {
+      runner.vy = -(7 + clickPower * 1.35);
+    }
   }
 
-  gameArea.addEventListener('mousedown', boostJumpPower);
+  gameArea.addEventListener('mousedown', jump);
 
   activeGameCleanup = () => {
     if (clickDecayTimer) {
       clearTimeout(clickDecayTimer);
     }
-    gameArea.removeEventListener('mousedown', boostJumpPower);
+    gameArea.removeEventListener('mousedown', jump);
   };
 
   function animate() {
-    const gameWidth = gameArea.clientWidth;
+    const width = gameArea.clientWidth;
 
-    blocks.forEach((block) => {
-      block.x -= speed;
-      if (block.x + block.width < 0) {
-        block.x = gameWidth + Math.random() * 180;
+    groundOffset = (groundOffset + obstacleSpeed) % 40;
+    gameArea.style.setProperty('--ground-offset', `${groundOffset}px`);
+
+    runner.vy += gravity;
+    runner.y += runner.vy;
+    if (runner.y > groundY) {
+      runner.y = groundY;
+      runner.vy = 0;
+    }
+
+    runnerEl.style.transform = `translate(${runner.x}px, ${runner.y}px)`;
+
+    obstacles.forEach((obstacle) => {
+      obstacle.x -= obstacleSpeed;
+      if (obstacle.x + obstacle.width < 0) {
+        obstacle.x = width + 160 + Math.random() * 260;
+        obstacle.heightBlocks = Math.floor(Math.random() * 3) + 1;
+        obstacle.element.style.height = `${obstacle.heightBlocks * 34}px`;
       }
-
-      block.vy += gravity;
-      block.y += block.vy;
-
-      const floorY = groundY - block.height;
-      if (block.y > floorY) {
-        block.y = floorY;
-        block.vy = 0;
-      }
-
-      block.element.style.transform = `translate(${block.x}px, ${block.y}px)`;
+      obstacle.element.style.transform = `translate(${obstacle.x}px, 0)`;
     });
 
     gameLoopId = requestAnimationFrame(animate);
