@@ -116,11 +116,6 @@ h1 {
   margin: 0.2rem 0 0.7rem;
 }
 
-.game-emoji {
-  font-size: clamp(4rem, 12vw, 6.5rem);
-  margin-bottom: 0.6rem;
-}
-
 .game-text {
   margin: 0 0 1rem;
   font-size: 1.05rem;
@@ -128,22 +123,44 @@ h1 {
 }
 
 .game-area {
+  --ground-offset: 0px;
   position: relative;
   width: 100%;
-  height: 220px;
+  height: 260px;
   border-radius: 18px;
   overflow: hidden;
-  background: linear-gradient(to top, #f6ce86 0 26px, #a7dcff 26px 100%);
   border: 3px solid rgba(83, 18, 53, 0.2);
   cursor: pointer;
+  background:
+    linear-gradient(to top, #f6ce86 0 44px, transparent 44px),
+    repeating-linear-gradient(
+      90deg,
+      rgba(143, 104, 52, 0.38) 0 18px,
+      rgba(143, 104, 52, 0.1) 18px 40px
+    ),
+    linear-gradient(to top, #b7e3ff, #9ad3ff);
+  background-size: 100% 100%, 40px 44px, 100% 100%;
+  background-position: 0 0, calc(var(--ground-offset) * -1) 100%, 0 0;
 }
 
-.jump-block {
+.runner {
   position: absolute;
-  bottom: 0;
   left: 0;
-  background: linear-gradient(180deg, #2f3d68, #1b2646);
+  top: 0;
+  font-size: 3.7rem;
+  line-height: 1;
+  transform: translate(92px, 176px);
+  will-change: transform;
+  filter: drop-shadow(0 8px 6px rgba(0, 0, 0, 0.22));
+}
+
+.obstacle {
+  position: absolute;
+  left: 0;
+  bottom: 44px;
+  width: 38px;
   border-radius: 8px 8px 2px 2px;
+  background: linear-gradient(180deg, #2f3d68, #1b2646);
   box-shadow: 0 5px 10px rgba(0, 0, 0, 0.25);
   will-change: transform;
 }
